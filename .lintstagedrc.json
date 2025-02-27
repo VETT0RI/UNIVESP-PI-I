@@ -1,0 +1,7 @@
+{
+  "*.ts": [
+    "npx eslint --fix",
+    "npx prettier --check",
+    "npm run test:staged"
+  ]
+}
