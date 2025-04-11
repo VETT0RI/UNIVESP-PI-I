@@ -6,4 +6,4 @@ const router = Router();
 router.get('/', StaffController.list);
 router.post('/', StaffController.create);
 
-export { router as staff_router };
+export default router; 

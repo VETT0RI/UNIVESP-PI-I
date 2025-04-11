@@ -1,5 +1,6 @@
 import express from 'express'
-import { staff_router } from './routes/staff.routes.js'
+import staff_router from './routes/staff.routes.js'
+import auth_router from './routes/auth.routes.js'
 
 const app = express()
 
@@ -10,5 +11,6 @@ app.get('/', (req, res) => {
 })
 
 app.use('/staff', staff_router);
+app.use('/auth', auth_router);
 
 export default app
