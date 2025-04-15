@@ -1,18 +1,34 @@
 import { StaffService } from "../services/staff.service.js";
 import { Request, Response } from 'express';
 
-const listStaffController = (
+const listStaffController = async (
     request: Request, response: Response
 ) => {
-    response.status(200).json(StaffService.list());
+    try {
+        const staff_list = await StaffService.list();
+        response.status(200).json(staff_list);
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
-const createStaffController = (
+const createStaffController = async (
     request: Request, response: Response
 ) => {
-    const staff = request.body;
-    const res = StaffService.create(staff);
-    response.status(201).json(res);
+    try {
+        if(!request.body) throw new Error('Request body is empty');
+        const { email, password } = request.body;
+
+        if(!email || !password) {
+            return response.status(400).json({ error: 'Email and password are required' });
+        }
+        const staff = await StaffService.create({ email, password });
+        response.status(201).json(staff);
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
 }
 
 export const StaffController = {

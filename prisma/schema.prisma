@@ -139,6 +139,14 @@ model vehicles {
   collaborators   collaborators @relation(fields: [collaborator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model staffs {
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  email      String   @unique @db.VarChar
+  password   String   @db.VarChar
+  id         String   @id @unique @db.Uuid
+}
+
 enum contract_type {
   CLT
   PJ
