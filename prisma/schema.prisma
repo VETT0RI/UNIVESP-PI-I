@@ -1,0 +1,250 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model collaborators {
+  id                         Int                      @id @default(autoincrement())
+  name                       String                   @db.VarChar(255)
+  department_id              Int
+  status                     status_type
+  collaborator_photo         String?                  @db.VarChar(255)
+  social_name                String?                  @db.VarChar(255)
+  sex                        sex_type
+  nationality                String                   @db.VarChar(100)
+  birthplace                 String                   @db.VarChar(100)
+  state                      String                   @db.VarChar(50)
+  marital_status             marital_status_type
+  t_shirt_size               t_shirt_size_type
+  personal_email             String                   @db.VarChar(255)
+  phone_number               String                   @db.VarChar(20)
+  date_of_birth              DateTime                 @db.Date
+  ethnicity                  ethnicity_type
+  cpf_number                 String                   @db.VarChar(14)
+  rg_number                  String                   @db.VarChar(20)
+  rg_issuing_body            String                   @db.VarChar(50)
+  rg_state                   rg_state_type
+  rg_issue_date              DateTime                 @db.Date
+  address                    String                   @db.VarChar(255)
+  residence_number           Int
+  complement                 String                   @db.VarChar(100)
+  neighborhood               String                   @db.VarChar(100)
+  city                       String                   @db.VarChar(100)
+  cep                        String                   @db.VarChar(9)
+  mother_name                String                   @db.VarChar(255)
+  father_name                String                   @db.VarChar(255)
+  pis_number                 String                   @db.VarChar(14)
+  pis_registration_date      DateTime                 @db.Date
+  has_itau_account           Boolean
+  itau_account               String                   @db.VarChar(20)
+  itau_agency                String                   @db.VarChar(10)
+  has_cnpj                   Boolean
+  cnpj_corporate_name        String                   @db.VarChar(255)
+  cnpj_bank_details          String                   @db.VarChar(255)
+  has_disability             Boolean
+  start_date                 DateTime                 @db.Date
+  voter_registration_number  BigInt
+  voter_registration_zone    String                   @db.VarChar(10)
+  voter_registration_section String                   @db.VarChar(10)
+  reservist_number           String                   @db.VarChar(30)
+  reservist_category         String                   @db.VarChar(30)
+  education                  education_type
+  training_course            String                   @db.VarChar(255)
+  course_completion_date     DateTime                 @db.Date
+  corporate_email            String                   @db.VarChar(255)
+  type_of_contract           contract_type
+  position                   position_type
+  level                      level_type
+  leads_team                 Boolean
+  has_dependents             Boolean
+  will_use_vt                Boolean
+  will_use_parking           Boolean
+  number_of_dependents       Int
+  departments                departments              @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  dependents                 dependents[]
+  documents                  documents[]
+  emergency_contacts         emergency_contacts[]
+  transportation_voucher     transportation_voucher[]
+  vehicles                   vehicles[]
+}
+
+model departments {
+  id            Int             @id(map: "departaments_pkey") @default(autoincrement())
+  name          String          @db.VarChar(255)
+  slug          String          @db.VarChar(255)
+  board         String          @db.VarChar(50)
+  cost_center   String          @db.VarChar(50)
+  group_email   String          @db.VarChar(255)
+  company       String          @db.VarChar(100)
+  collaborators collaborators[]
+}
+
+model dependents {
+  id                 Int           @id @default(autoincrement())
+  collaborator_id    Int
+  name               String        @db.VarChar(255)
+  degree_of_kinship  String        @db.VarChar(50)
+  birth_date         DateTime      @db.Date
+  birth_certificate  Bytes?
+  cpf                Bytes?
+  proof_of_education Bytes?
+  collaborators      collaborators @relation(fields: [collaborator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model documents {
+  id                    Int           @id @default(autoincrement())
+  collaborator_id       Int
+  marriage_certificate  Bytes?
+  medical_report        Bytes?
+  voter_registration    Bytes?
+  rg                    Bytes?
+  cpf                   Bytes?
+  proof_of_residence    Bytes?
+  digital_work_card     Bytes?
+  reservist_certificate Bytes?
+  birth_certificate     Bytes?
+  proof_of_stable_union Bytes?
+  collaborators         collaborators @relation(fields: [collaborator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model emergency_contacts {
+  id                Int           @id @default(autoincrement())
+  collaborator_id   Int
+  name              String        @db.VarChar(255)
+  degree_of_kinship String        @db.VarChar(50)
+  phone_number      String        @db.VarChar(20)
+  collaborators     collaborators @relation(fields: [collaborator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model transportation_voucher {
+  id                     Int           @id @default(autoincrement())
+  collaborator_id        Int
+  witch_card             String        @db.VarChar(50)
+  daily_round_trip_price Decimal       @db.Decimal(10, 2)
+  details_of_lines_used  String
+  collaborators          collaborators @relation(fields: [collaborator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model vehicles {
+  plate           String        @id @db.VarChar(10)
+  collaborator_id Int
+  year            Int
+  brand           String        @db.VarChar(50)
+  model           String        @db.VarChar(50)
+  color           String        @db.VarChar(30)
+  collaborators   collaborators @relation(fields: [collaborator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model staffs {
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  email      String   @unique @db.VarChar
+  password   String   @db.VarChar
+  id         String   @id @unique @db.Uuid
+}
+
+enum contract_type {
+  CLT
+  PJ
+  Estagio
+  Temporario
+  Autonomo
+}
+
+enum education_type {
+  fundamental
+  medio
+  tecnico
+  superior
+  pos_graduacao
+  mestrado
+  doutorado
+}
+
+enum ethnicity_type {
+  branca
+  preta
+  parda
+  amarela
+  indigena
+  outra
+}
+
+enum level_type {
+  J_nior       @map("Júnior")
+  Pleno
+  S_nior       @map("Sênior")
+  Especialista
+}
+
+enum marital_status_type {
+  solteiro
+  casado
+  divorciado
+  viuvo
+}
+
+enum position_type {
+  Desenvolvedor
+  Analista
+  Gerente
+  Diretor
+  Estagiario
+  Assistente
+}
+
+enum rg_state_type {
+  AC
+  AL
+  AP
+  AM
+  BA
+  CE
+  DF
+  ES
+  GO
+  MA
+  MT
+  MS
+  MG
+  PA
+  PB
+  PR
+  PE
+  PI
+  RJ
+  RN
+  RS
+  RO
+  RR
+  SC
+  SP
+  SE
+  TO
+}
+
+enum sex_type {
+  masculino
+  feminino
+  outro
+}
+
+enum status_type {
+  ativo
+  inativo
+  pendente
+}
+
+enum t_shirt_size_type {
+  PP
+  P
+  M
+  G
+  GG
+  XG
+  XXG
+}
