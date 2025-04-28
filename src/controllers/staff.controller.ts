@@ -1,5 +1,6 @@
 import { StaffService } from "../services/staff.service.js";
 import { Request, Response } from 'express';
+import { createStaffSchema, staffSchema } from "../schemas/staff.schema.js";
 
 const listStaffController = async (
     request: Request, response: Response
@@ -25,9 +26,11 @@ const createStaffController = async (
         }
         const staff = await StaffService.create({ email, password });
         response.status(201).json(staff);
+        return;
     } catch (error) {
         console.error(error);
         response.status(500).json({ error: 'Internal Server Error' });
+        return;
     }
 }
 
