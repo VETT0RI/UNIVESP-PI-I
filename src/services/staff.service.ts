@@ -1,5 +1,4 @@
 import * as bcrypt from 'bcrypt'
-import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '../config/prisma/index.js'
 
 type Staff = {
@@ -8,10 +7,10 @@ type Staff = {
   password: string
 }
 
-const createStaff = async (data: { email: string; password: string }) => {
+const createStaff = async (data: Staff) => {
   const new_staff = await prisma.staff.create({
     data: {
-      id: uuidv4(),
+      id: data.id,
       email: data.email,
       password: await bcrypt.hash(data.password, 10),
     },

@@ -1,5 +1,6 @@
 import { StaffService } from '../services/staff.service.js'
 import { Request, Response } from 'express'
+import { v4 as uuidv4 } from 'uuid'
 import { createStaffSchema, staffSchema } from '../schemas/staff.schema.js'
 
 const listStaffController = async (request: Request, response: Response) => {
@@ -21,7 +22,7 @@ const createStaffController = async (request: Request, response: Response) => {
       response.status(400).json({ error: 'Email and password are required' })
       return
     }
-    const staff = await StaffService.create({ email, password })
+    const staff = await StaffService.create({ id: uuidv4(), email, password })
     response.status(201).json(staff)
     return
   } catch (error) {

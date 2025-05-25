@@ -1,10 +1,15 @@
-import 'dotenv/config'
 import app from './app.js'
+import dotenv from 'dotenv'
 
-const PORT = process.env.PORT || 3000
+dotenv.config()
+
+const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`)
-}).on('error', (err) => {
-  console.error('Erro ao iniciar o servidor:', err)
+  console.log(
+    `Permitindo requisições de: ${
+      process.env.FRONTEND_URL || 'http://localhost:3000'
+    }`
+  )
 })

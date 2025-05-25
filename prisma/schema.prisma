@@ -14,7 +14,7 @@ model Collaborator {
   name                       String                  @db.VarChar(255)
   department_id              Int?
   status                     StatusType
-  collaborator_photo         String                  @db.VarChar(255)
+  photo                      String?  @db.VarChar(2048)
   social_name                String                  @db.VarChar(255)
   sex                        SexType
   nationality                String                  @db.VarChar(100)
@@ -49,6 +49,9 @@ model Collaborator {
   cnpj_bank_details          String?                 @db.VarChar(255)
   has_disability             Boolean
   start_date                 DateTime                @db.Date
+  shutdown_date              DateTime?               @db.Date
+  shutdown_type              String?
+  shutdown_reason            String?
   voter_registration_number  BigInt?
   voter_registration_zone    String?                 @db.VarChar(10)
   voter_registration_section String?                 @db.VarChar(10)
@@ -62,6 +65,10 @@ model Collaborator {
   position                   PositionType?
   level                      LevelType?
   leads_team                 Boolean?
+  leader                     String?
+  salary                     String?
+  variable                   String?
+  bonus                      String?
   has_dependents             Boolean
   will_use_vt                Boolean?
   will_use_parking           Boolean?
@@ -72,6 +79,8 @@ model Collaborator {
   emergency_contacts         EmergencyContact[]
   transportation_voucher     TransportationVoucher[]
   vehicles                   Vehicle[]
+
+  @@map("collaborators")
 }
 
 model Department {
@@ -83,6 +92,7 @@ model Department {
   group_email   String         @db.VarChar(255)
   company       String         @db.VarChar(100)
   collaborators Collaborator[]
+  @@map("departments")
 }
 
 model Dependent {
@@ -91,28 +101,31 @@ model Dependent {
   name               String       @db.VarChar(255)
   degree_of_kinship  String       @db.VarChar(50)
   birth_date         DateTime     @db.Date
-  birth_certificate  Bytes?
-  cpf                Bytes?
-  proof_of_education Bytes?
-  collaborator       Collaborator @relation(fields: [collaboratorId], references: [id])
-  collaboratorId     Int
+  birth_certificate  String?  @db.VarChar(2048)
+  cpf                String?  @db.VarChar(2048)
+  proof_of_education String?  @db.VarChar(2048)
+  collaborator       Collaborator @relation(fields: [collaborator_id], references: [id])
+
+  @@map("dependents")
 }
 
 model Documents {
   id                    Int          @id @default(autoincrement())
   collaborator_id       Int
-  marriage_certificate  Bytes?
-  medical_report        Bytes?
-  voter_registration    Bytes?
-  rg                    Bytes?
-  cpf                   Bytes?
-  proof_of_residence    Bytes?
-  digital_work_card     Bytes?
-  reservist_certificate Bytes?
-  birth_certificate     Bytes?
-  proof_of_stable_union Bytes?
-  collaborator          Collaborator @relation(fields: [collaboratorId], references: [id])
-  collaboratorId        Int
+  marriage_certificate  String?  @db.VarChar(2048)
+  medical_report        String?  @db.VarChar(2048)
+  voter_registration    String?  @db.VarChar(2048)
+  rg                    String?  @db.VarChar(2048)
+  cpf                   String?  @db.VarChar(2048)
+  proof_of_residence    String?  @db.VarChar(2048)
+  digital_work_card     String?  @db.VarChar(2048)
+  reservist_certificate String?  @db.VarChar(2048)
+  proof_of_stable_union String?  @db.VarChar(2048)
+  cnpj                  String?  @db.VarChar(2048)
+  proof_of_education    String?  @db.VarChar(2048)
+  collaborator          Collaborator @relation(fields: [collaborator_id], references: [id])
+
+  @@map("documents")
 }
 
 model EmergencyContact {
@@ -121,8 +134,7 @@ model EmergencyContact {
   name              String       @db.VarChar(255)
   degree_of_kinship String       @db.VarChar(50)
   phone_number      String       @db.VarChar(20)
-  collaborator      Collaborator @relation(fields: [collaboratorId], references: [id])
-  collaboratorId    Int
+  collaborator      Collaborator @relation(fields: [collaborator_id], references: [id])
 
   @@map("emergency_contacts")
 }
@@ -133,8 +145,7 @@ model TransportationVoucher {
   witch_card             String       @db.VarChar(50)
   daily_round_trip_price Decimal      @db.Decimal(10, 2)
   details_of_lines_used  String
-  collaborators          Collaborator @relation(fields: [collaboratorId], references: [id])
-  collaboratorId         Int
+  collaborators          Collaborator @relation(fields: [collaborator_id], references: [id])
 
   @@map("transportation_voucher")
 }
@@ -146,16 +157,18 @@ model Vehicle {
   brand           String       @db.VarChar(50)
   model           String       @db.VarChar(50)
   color           String       @db.VarChar(30)
-  collaborator    Collaborator @relation(fields: [collaboratorId], references: [id])
-  collaboratorId  Int
+  collaborator    Collaborator @relation(fields: [collaborator_id], references: [id])
+
+  @@map("vehicles")
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Staff {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   email      String   @unique @db.VarChar
   password   String   @db.VarChar
   id         String   @id @unique @db.Uuid
+
+  @@map("staffs")
 }
 
 enum ContractType {
@@ -167,13 +180,11 @@ enum ContractType {
 }
 
 enum EducationType {
-  Fundamental
-  Medio
-  Tecnico
-  Superior
-  PosGraduacao @map("Pós graduação")
-  Mestrado
-  Doutorado
+  Ensino_medio_completo @map("Ensino médio completo")
+  Ensino_superior_incompleto @map("Ensino superior incompleto")
+  Ensino_superior_completo @map("Ensino superior completo")
+  Pos_graduacao_incompleto @map("Pós graduação/mestreado/MBA incompleto")
+  Pos_graduacao_completo @map("Pós graduação/mestreado/MBS completo")
 }
 
 enum EthnicityType {

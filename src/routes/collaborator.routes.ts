@@ -3,14 +3,14 @@ import { CollaboratorController } from '../controllers/collaborator.controller.j
 
 const router = Router()
 
-router.get('/', CollaboratorController.list)
+router.get('/collaborators', CollaboratorController.list)
 
-router.get('/:id', CollaboratorController.getById)
+router.get('/collaborator/:id', CollaboratorController.getById)
 
-router.post('/', CollaboratorController.create)
+router.post('/collaborator', ...CollaboratorController.create)
 
-router.put('/:id', CollaboratorController.update)
+router.put('/collaborator/:id', CollaboratorController.update)
 
-router.delete('/:id', CollaboratorController.remove)
+router.delete('/collaborator/:id', CollaboratorController.remove)
 
 export default router
